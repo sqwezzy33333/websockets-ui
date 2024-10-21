@@ -1,7 +1,10 @@
-import { WebSocketServer } from 'ws';
+import WebSocket, {WebSocketServer} from 'ws';
+import {userController} from "../user-controller/user-controller";
+import {AuthRequestUser} from "../models";
 
 export class WsController {
-    server: null | WebSocketServer = null;
+    server!: WebSocketServer;
+    ws!: WebSocket;
 
     createWsServer() {
         this.server = new WebSocketServer({
@@ -9,13 +12,18 @@ export class WsController {
         });
 
         this.server.on('connection', (ws) => {
+            this.ws = ws;
             ws.on('message', this.serverListener)
         })
     }
 
-    serverListener = (message: Buffer) => {
-        const parseMessage = JSON.parse(message.toString());
-        console.log(parseMessage);
+    serverListener = (message: string) => {
+        const parseMessage = JSON.parse(message);
+        parseMessage.data = JSON.parse(parseMessage.data);
+
+        if (parseMessage.type === 'reg') {
+            userController.setWebSocket(this.ws).checkUser(parseMessage as AuthRequestUser).then();
+        }
     }
 }
 
