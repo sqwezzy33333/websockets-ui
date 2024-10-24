@@ -1,0 +1,6 @@
+{
+  "watch": ["src/websocket-server"],
+  "ext": "ts,json",
+  "ignore": ["src/websocket-server/src/db"],
+  "exec": "ts-node ./src/websocket-server"
+}
